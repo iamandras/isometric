@@ -1,4 +1,4 @@
-html, body { margin:0; padding: 0}
+html, body { margin:0; padding: 0; font-family: sans-serif}
 
 body {
     background-color: #31b1b8;
@@ -13,10 +13,28 @@ body {
     background-color: white;
     padding: 8px;
     border-radius: 8px;
+}
+
+#overlay .twitter {
+    display: flex;
+    align-items: center;
+    color: black;
+    text-decoration: none;
+    font-size: 12px;
+}
+
+#overlay .twitter svg {
+    width: 20px;
+    height: 20px;
+    fill: #1d9bf0;
+    margin-right: 4px;
+}
+
+#overlay .colContainer {
     display: flex;
 }
 
-#overlay .col {
+#overlay .colContainer .col {
     width: 33%;
 }
 
