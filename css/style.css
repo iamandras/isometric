@@ -215,3 +215,19 @@ body {
     height: 45px;
     background: transparent url('/player/player.png') no-repeat;
 }
+
+@media (max-width: 767px) {
+    #overlay {
+        left: -8px;
+        top: 0;
+    }
+
+    #overlay a {
+        margin: 0;
+        padding: 2px;
+    }
+
+    #overlay .github {
+        display: none;
+    }
+}
