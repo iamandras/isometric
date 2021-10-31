@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+
+    <title>Isometric</title>
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+        <defs>
+            <symbol id="play" viewBox="0 0 24 24" stroke-width="1.5" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <circle cx="12" cy="5" r="2" />
+                <path d="M20 12.5v4.75a0.734 .734 0 0 1 -.055 .325a0.704 .704 0 0 1 -.348 .366l-5.462 2.58a4.998 4.998 0 0 1 -4.27 0l-5.462 -2.58a0.705 .705 0 0 1 -.401 -.691l-.002 -4.75" />
+                <path d="M4.431 12.216l5.634 -2.332a5.065 5.065 0 0 1 3.87 0l5.634 2.332a0.692 .692 0 0 1 .028 1.269l-5.462 2.543a5.064 5.064 0 0 1 -4.27 0l-5.462 -2.543a0.691 .691 0 0 1 .028 -1.27z" />
+                <line x1="12" y1="7" x2="12" y2="13" />
+            </symbol>
+
+            <symbol id="delete" viewBox="0 0 24 24" stroke-width="1.5" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <circle cx="4" cy="17" r="2" />
+                <circle cx="13" cy="17" r="2" />
+                <path d="M18 13v6h3" />
+                <line x1="13" y1="19" x2="4" y2="19" />
+                <line x1="4" y1="15" x2="13" y2="15" />
+                <path d="M8 12v-5h2a3 3 0 0 1 3 3v5" />
+                <path d="M5 15v-2a1 1 0 0 1 1 -1h7" />
+                <line x1="18" y1="17" x2="15" y2="17" />
+            </symbol>
+
+            <symbol id="show" viewBox="0 0 24 24" stroke-width="1.5" stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M8 8h8v8h-8z" />
+                <path d="M4 4v.01" />
+                <path d="M8 4v.01" />
+                <path d="M12 4v.01" />
+                <path d="M16 4v.01" />
+                <path d="M20 4v.01" />
+                <path d="M4 20v.01" />
+                <path d="M8 20v.01" />
+                <path d="M12 20v.01" />
+                <path d="M16 20v.01" />
+                <path d="M20 20v.01" />
+                <path d="M20 16v.01" />
+                <path d="M20 12v.01" />
+                <path d="M20 8v.01" />
+                <path d="M4 16v.01" />
+                <path d="M4 12v.01" />
+                <path d="M4 8v.01" />
+            </symbol>
+        </defs>
+    </svg>
+    <link href="css/style.css" rel="stylesheet">
+</head>
+    <body>
+        <div id="hitmaps"></div>
+        <div id="overlay">
+            <div id="overlayCol1" class="col"></div>
+            <div id="overlayCol2" class="col"></div>
+            <div id="overlayCol3" class="col"></div>
+        </div>
+        <div id="screen" class="screen">
+            <div id="map" style="transform: translate(500px,100px);">
+                <div id="player" class="player"></div>
+                <div id="selector" class="selector" style="display: none"></div>
+            </div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js" integrity="sha512-UxP+UhJaGRWuMG2YC6LPWYpFQnsSgnor0VUF3BHdD83PS/pOpN+FYbZmrYN+ISX8jnvgVUciqP/fILOXDjZSwg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="js/selector.js"></script>
+        <script src="js/astar.js"></script>
+        <script src="js/mapEngine.js"></script>
+        <script src="js/gameEngine.js"></script>
+        <script src="js/overlay.js"></script>
+
+        <script>
+            // http://clintbellanger.net/articles/isometric_math/
+            const TILE_WIDTH_HALF = 128 / 2;
+            const TILE_HEIGHT_HALF = 64 / 2;
+            const MAX_MAP_WIDTH = 100;
+            const MAX_MAP_HEIGHT = 100;
+
+            let map = [[12,6,6,6,6,6,14],[7,1,1,1,3,1,5,0,0,12,6,6,6,6,6,6,6,6,14],[7,1,1,2,3,1,5,0,0,7,1,1,1,2,1,1,1,1,5],[7,1,1,1,3,2,5,0,12,11,1,2,1,2,1,3,1,1,5],[7,1,1,3,3,3,9,6,11,2,8,4,4,4,10,3,1,1,5,0],[7,2,1,2,3,3,3,3,3,2,5,0,0,0,7,3,1,2,5],[7,2,1,1,3,1,8,4,10,2,9,6,6,6,11,3,1,1,5],[13,10,3,2,8,4,15,0,7,1,1,1,1,3,3,3,1,1,5],[0,7,3,2,5,0,0,0,7,3,3,3,3,3,1,1,1,1,5],[0,7,3,3,5,0,0,0,7,1,1,2,1,1,1,2,1,1,5],[0,7,3,2,9,14,0,0,7,1,1,1,1,1,1,1,8,4,15],[0,7,3,2,2,9,6,14,7,2,2,1,1,1,1,1,5,0,0],[0,7,2,2,1,2,2,5,13,4,4,4,4,4,4,4,15,0],[0,13,4,4,10,2,2,5],[0,0,0,0,13,4,4,15]]
+
+
+            let objectMap = [[],[0,2,0,0,0,2],[0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1],[0,3,998],[0,1000,1001],[],[0,2,0,0,0,1,0,0,0,0,0,0,0,0,0,0,4,998],[0,0,0,0,0,0,0,0,0,0,0,0,1],[0,0,0,1],[],[0,0,0,0,0,0,0,0,0,4,998,0,0,0,0,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,2],[0,0,2]]
+
+            const objectTypeMapping = [
+                { xChange: 0, yChange: 200 - 64, xSize: 1, ySize: 1, width: 128, height: 200 }, // tree
+                { xChange: 0, yChange: 200 - 64, xSize: 1, ySize: 1, width: 128, height: 200 }, // tower
+                { xChange: 64, yChange: 64, xSize: 2, ySize: 2, width: 256, height: 200 }, // big castle
+                { xChange: -8, yChange: 32, xSize: 2, ySize: 1, width: 192, height: 132 }, // house
+            ];
+
+            const mapEngine = new MapEngine(map, objectMap, objectTypeMapping);
+            const gameEngine = new GameEngine(mapEngine, { x: 2, y: 1});
+            const overlay = new Overlay(gameEngine);
+            gameEngine.init();
+            mapEngine.init();
+            overlay.init();
+        </script>
+    </body>
+</html>
